@@ -10,19 +10,19 @@ Wanna expand it for multiple users eventually when I get time.
 
 ## What's here
 
-```
-nib-and-wings.html      source of truth: design, copy, and gallery config
-build-public.js         generates public/index.html from it (see "The HTML" below)
-public/index.html       generated; do not hand-edit, your changes get overwritten
-server.js               the whole backend, about 270 lines
-seed-admin.js           npm run seed turns .env credentials into data/admin.json
-smoke-test.js           end-to-end check against a running server
-lib/store.js            readJSON / writeJSON. This is the database layer.
-data/admin.json         { username, passwordHash }         (generated, gitignored)
-data/images.json        [ { id, gallery_key, filename, original_filename, caption, note, created_at } ]
-uploads/                the actual image files            (generated, gitignored)
-deploy/                 systemd unit + nginx config
-```
+| File or folder | Purpose |
+|---|---|
+| `nib-and-wings.html` | Source file for the design, copy, and gallery configuration |
+| `build-public.js` | Generates `public/index.html` |
+| `public/index.html` | Generated website file; do not edit manually |
+| `server.js` | Express backend |
+| `seed-admin.js` | Creates the admin account from `.env` credentials |
+| `smoke-test.js` | End-to-end tests for the running server |
+| `lib/store.js` | Handles JSON reading and writing |
+| `data/admin.json` | Admin username and password hash; generated and ignored |
+| `data/images.json` | Stored image metadata; generated and ignored |
+| `uploads/` | Uploaded image files; generated and ignored |
+| `deploy/` | systemd service and nginx configuration |
 
 ---
 
