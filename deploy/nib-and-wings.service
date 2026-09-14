@@ -1,0 +1,64 @@
+# /etc/systemd/system/nib-and-wings.service
+#
+#   sudo cp deploy/nib-and-wings.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now nib-and-wings
+#   sudo systemctl status nib-and-wings
+#   journalctl -u nib-and-wings -f        # live logs
+
+[Unit]
+Description=Nib & Wings calligraphy practice log
+Documentation=https://github.com/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nibwings
+Group=nibwings
+WorkingDirectory=/srv/nib-and-wings
+
+# .env holds SESSION_SECRET, so keep it readable only by the service user:
+#   sudo chown nibwings:nibwings /srv/nib-and-wings/.env && sudo chmod 600 /srv/nib-and-wings/.env
+EnvironmentFile=/srv/nib-and-wings/.env
+Environment=NODE_ENV=production
+
+ExecStart=/usr/bin/node /srv/nib-and-wings/server.js
+
+Restart=always
+RestartSec=3
+# If it crash-loops more than 5 times in 60s, stop trying and leave it failed
+# so `systemctl status` shows the real problem instead of churning.
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nib-and-wings
+
+# --- Sandboxing -------------------------------------------------------------
+# The process only ever needs to write to data/ and uploads/.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=/srv/nib-and-wings/data /srv/nib-and-wings/uploads
+
+# The free-tier VMs are small; keep a runaway process from taking the box down.
+MemoryMax=512M
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target
